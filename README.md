@@ -9,11 +9,11 @@ As a hobbyist, I use Arduino frequently to prototype projects, and I've had to u
 There are many techniques out there for eliminating such bouncing, both in software and in hardware, software being easier to implement, but hardware being more reliable, yet more expensive. I decided to make a PCB that implements a hardware debouncing solution, because I can print multiple such PCBs that all work identically.
 
 ## Principle of Operation (hardware)
-The Rotary Encoder has 2 signal pins. One of those pins is fed into an RC circuit that absorbs the bounce, but turns the digital signal into a slow-rising curve. This is fed into a Schmitt Trigger, which offers hysteresis and turns the rising voltage curve into a clean fast-rising digital signal.
+The Rotary Encoder has 2 signal pins. One of those pins is fed into an RC circuit that absorbs the bounce, but turns the digital signal into a slow-rising curve. This is fed into an Inverting Schmitt Trigger, which offers hysteresis and turns the rising voltage curve into a clean fast-rising digital signal.
 
-I didn't have any Schmitt triggers laying around, and I didn't want to buy some just for this circuit, so I used a common 555 IC as a Schmitt trigger. It works quite well for this purpose, and I have plenty of them laying around since they are so versatile.
+I didn't have any Schmitt triggers laying around, and I didn't want to buy some just for this circuit, so I used a common 555 IC as an Inverting Schmitt trigger. It works quite well for this purpose, and I have plenty of them laying around since they are so versatile.
 
-This circuit is heavily based on Jeremy Blum's [Arduino Tutorial #10 on Interrupts and Hardware Debouncing](https://youtu.be/CRJUdf5TTQQ), it quite excellent.
+This circuit is heavily based on Jeremy Blum's [Arduino Tutorial #10 on Interrupts and Hardware Debouncing](https://youtu.be/CRJUdf5TTQQ), it is quite excellent. Look at it for more details on how this circuit works in principle.
 
 To debounce a single signal, I used a single resistor, a single capacitor, and a 555 IC. To lower the component count, I only debounced one of the 2 signals, which is good enough because we only need one signal to feed into an interrupt pin.
 
@@ -46,6 +46,8 @@ void setup() {
 
     // Execute the encoderISR function on a RISING edge
     attachInterrupt(0, encoderISR, RISING);
+
+    Serial.begin(9600);
 }
 
 void encoderISR() {
@@ -90,3 +92,9 @@ Quantity | Part | Package | DigiKey Part Number
 
 (note 1) The footprint for the encoder has 5 holes, 3 on one side and 2 on the other. The holes are 0.1" apart, and the 2 rows of holes are 0.6" apart. Most cheap rotary encoders have very similar footprints. Worst case you will have to bend the pins a little bit to make them fit nicely
 
+## Additional Hardware Insights
+You might notice that Capacitor C1 charges through R1, but discharges relatively instantaneously because it shorts to GND. As such, the RC-Debouncing technically only happens while the capacitor is charging, (signal is RISING), but that feeds into the Inverting Schmitt Trigger, so the signal is only guaranteed to be properly debounced on a FALLING edge. For maximum reliability, choose the FALLING edge as the interrupt trigger in the software
+
+If you build this circuit, do beware: The resistor/capacitor values I chose are dependent on the specific encoders I had, and were calculated to filter out bounce that lasted no longer than 1 ms. While building my debouncer, I stumbled upon this [wonderful guide to debouncing](http://www.eng.utah.edu/~cs5780/debouncing.pdf). It has great explanations, and some humor sprinkled here and there, I strongly recommend reading it to gain a better understanding of debouncing. I used it as a reference for calculating the resistor/capacitor values
+
+It is most likely that your encoder will have similar bounce, no more than 1 ms in duration, so the values I used are most likely compatible. But do feel free to change them as you see fit.
