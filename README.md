@@ -1,8 +1,10 @@
 # Encoder Debouncer
 An simple PCB that takes a rotary encoder and debounces one of the pins
 
-<img style="display:inline-block" src="/Images/isometric-render.PNG"/>
-<img src="/Images/bottom-render.PNG"/>
+<p float="left">
+    <img src="/Images/isometric-render.PNG" width="200"/>
+    <img src="/Images/bottom-render.PNG"    width="200"/>
+</p>
 
 ## Inspiration
 As a hobbyist, I use Arduino frequently to prototype projects, and I've had to use Rotary Encoders from time to time. Anyone who's used a Rotary Encoder can vouch for what a pain they are to use with Arduino's hardware interrupts, because the mechanical nature of the encoder has bounce that needs to be filtered.
