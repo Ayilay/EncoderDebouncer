@@ -6,12 +6,22 @@ An simple PCB that takes a rotary encoder and debounces one of the pins
     <img src="/Images/bottom-render.PNG"    width="200"/>
 </p>
 
-## Inspiration
+## What is an encoder?
+A rotary encoder is a rotary device that can spin indefinitely. You might have encountered them before in a car that has a digital volume knob. They're pretty nice to use in projects as menu knobs, but using them isn't entirely straightforward. There are several great tutorials on YouTube, but all of them mention a large issue with them: bounce
+
+## What is a debouncer?
+If you've ever used push-buttons or rotary encoders with Arduino, chances are you've encountered the term "bounce" before. If not, mechanical bounce is simply a side effect of all mechanical switches. Say you have a push-button, and pushing it causes the switch contacts to connect. In a perfect world, that happens cleanly, but in the real world, the contacts will "bounce" back and forth between connected and disconnected until they eventually stabilize. Sometimes this bounce isn't a huge deal, but if you're working with Interrupts on microcontrollers that need a clean transition as an input, then removing this bounce is critical. A debouncer circuit does just that.
+
+To visualize bounce, look at the illustration below under the _Principle of Operation (software)_ section.
+
+There are multiple ways to remove bounce, either fully software, hardware, or both. Software is easier to implement and essentially free, but can be less reliable than hardware. Hardware requires you to buy components and assemble a debouncer circuit, but can be more reliable and leads to cleaner code.
+
+## Inspiration for this project
 As a hobbyist, I use Arduino frequently to prototype projects, and I've had to use Rotary Encoders from time to time. Anyone who's used a Rotary Encoder can vouch for what a pain they are to use with Arduino's hardware interrupts, because the mechanical nature of the encoder has bounce that needs to be filtered.
 
-There are many techniques out there for eliminating such bouncing, both in software and in hardware, software being easier to implement, but hardware being more reliable, yet more expensive. I decided to make a PCB that implements a hardware debouncing solution, because I can print multiple such PCBs that all work identically.
+I've found software debouncing to be very frustrating and unpredictable, so I wanted to make a hardware debouncer that was easy to use. My solution was this PCB, a breadboard-friendly circuit board that is ready to use as soon as all the components are soldered on it. From there it can connect directly to an Arduino or other MCU without additional components. The PCB nature of the project also makes it very easy to print multiple pieces that behave identically.
 
-## Principle of Operation (hardware)
+## Debouncer Principle of Operation (hardware)
 The Rotary Encoder has 2 signal pins. One of those pins is fed into an RC circuit that absorbs the bounce, but turns the digital signal into a slow-rising curve. This is fed into an Inverting Schmitt Trigger, which offers hysteresis and turns the rising voltage curve into a clean fast-rising digital signal.
 
 I didn't have any Schmitt triggers laying around, and I didn't want to buy some just for this circuit, so I used a common 555 IC as an Inverting Schmitt trigger. It works quite well for this purpose, and I have plenty of them laying around since they are so versatile.
@@ -20,8 +30,7 @@ This circuit is heavily based on Jeremy Blum's [Arduino Tutorial #10 on Interrup
 
 To debounce a single signal, I used a single resistor, a single capacitor, and a 555 IC. To lower the component count, I only debounced one of the 2 signals, which is good enough because we only need one signal to feed into an interrupt pin.
 
-
-## Principle of Operation (software)
+## Debouncer Principle of Operation (software)
 If you've worked with encoders before, you might be familiar with the below diagram of the 2 signal pins
 <img src="/Images/timing-diagram.png"/>
 
