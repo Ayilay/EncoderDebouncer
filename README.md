@@ -45,8 +45,8 @@ Below is some example code that applies this principle in practice.
 
 ## Example code for Arduino Uno
 ```
-const int ENC_DEB = 2;  // Debounced Encoder signal, feeds into interrupt 0 on Uno
-const int ENC_RAW = 7;  // Non-Debounced Encoder signal, feeds into any pin
+#define ENC_DEB 2  // Debounced Encoder signal, feeds into interrupt 0 on Uno
+#define ENC_RAW 7  // Non-Debounced Encoder signal, feeds into any pin
 
 // A counter variable that is incremented/decremented
 // whenever the encoder is rotated. Initial value is arbitrary
@@ -57,7 +57,7 @@ void setup() {
     pinMode(ENC_RAW, INPUT);
 
     // Execute the encoderISR function on a RISING edge
-    attachInterrupt(0, encoderISR, RISING);
+    attachInterrupt(digitalPintToInterrupt(ENC_DEB), encoderISR, RISING);
 
     Serial.begin(9600);
 }
